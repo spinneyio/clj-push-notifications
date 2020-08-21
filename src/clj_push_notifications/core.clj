@@ -21,6 +21,9 @@
         options (.build builder-with-db)]
     (FirebaseApp/initializeApp options)))
 
+(defn delete-firebase []
+  (.delete (FirebaseApp/getInstance)))
+
 (defn- get-notification [builder title message badge custom-field custom-data type]
   (assert (string? custom-field))
   (assert (int? badge))

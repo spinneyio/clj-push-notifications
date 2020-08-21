@@ -11,12 +11,12 @@ First get Your credentials (google-services.json file) from Firebase console, an
 ```clj
 (ns example.firebase-notifications
     (:require [mount.core :refer [defstate]]
-              [fcm-client.core :as fcm]))
+              [clj-push-notifications.core :as fcm]))
 
 (defstate firebase-notifications
     ; You can check Your db-url in: Firebase Console -> Settings -> Service Accounts.
-    :start  (init-firebase (slurp config-file-path) db-url)
-    :stop  (.delete (FirebaseApp/getInstance)))
+    :start  (fcm/init-firebase (slurp config-file-path) db-url)
+    :stop  (fcm/delete-firebase)
 
 (def notification-params (-> {}
                             (assoc :token "some-firebase-token")
