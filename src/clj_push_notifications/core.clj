@@ -13,13 +13,17 @@
       (.getBytes)
       (ByteArrayInputStream.)))
 
-(defn init-firebase [credentials db-url]
-  (let [refreshToken (string-to-stream credentials)
-        builder (FirebaseOptions$Builder.)
-        builder-with-cred (.setCredentials builder (GoogleCredentials/fromStream refreshToken))
-        builder-with-db (.setDatabaseUrl builder-with-cred db-url)
-        options (.build builder-with-db)]
-    (FirebaseApp/initializeApp options)))
+(defn init-firebase 
+  ([credentials] (init-firebase credentials nil))
+  ([credentials db-url]
+   (let [refreshToken (string-to-stream credentials)
+         builder (FirebaseOptions$Builder.)
+         builder-with-cred (.setCredentials builder (GoogleCredentials/fromStream refreshToken))
+         builder-with-db (if db-url
+                           (.setDatabaseUrl builder-with-cred db-url)
+                           builder-with-cred)
+         options (.build builder-with-db)]
+     (FirebaseApp/initializeApp options))))
 
 (defn delete-firebase []
   (.delete (FirebaseApp/getInstance)))
