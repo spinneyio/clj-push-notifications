@@ -38,7 +38,8 @@
                                 (.setIcon "stock_ticker_update")
                                 (.setColor  "#f45342")
                                 (.setTitle title)
-                                (.setClickAction type))
+                                (.setClickAction type)
+                                (.setNotificationCount badge))
 
         android-notification (.build android-notification)
 
