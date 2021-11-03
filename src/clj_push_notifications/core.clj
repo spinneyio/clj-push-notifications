@@ -28,9 +28,10 @@
 (defn delete-firebase []
   (.delete (FirebaseApp/getInstance)))
 
-(defn- get-notification [builder title message badge custom-field custom-data type]
+(defn- get-notification [builder title message badges custom-field custom-data type]
   (assert (string? custom-field))
-  (assert (int? badge))
+  (assert (int? (:android badges)))
+  (assert (int? (:aps badges)))
   (assert (string? type))
   (let [notification (Notification. title message)
 
@@ -39,7 +40,7 @@
                                 (.setColor  "#f45342")
                                 (.setTitle title)
                                 (.setClickAction type)
-                                (.setNotificationCount badge))
+                                (.setNotificationCount (:android badges)))
 
         android-notification (.build android-notification)
 
@@ -51,7 +52,7 @@
         android-config (.build android-config)
 
         aps (doto (Aps/builder)
-              (.setBadge badge)
+              (.setBadge (:aps badges))
               (.putCustomData custom-field custom-data)
               (.setCategory type))
 
@@ -69,18 +70,18 @@
     message))
 
 
-(defn send-notification [{:keys [token title message badge custom-field custom-data type]}]
+(defn send-notification [{:keys [token title message badges custom-field custom-data type]}]
   (let [custom-field (or custom-field "")
         custom-data (or custom-data "")
-        message (get-notification (Message/builder) title message badge custom-field custom-data type)
+        message (get-notification (Message/builder) title message badges custom-field custom-data type)
         message-with-token (.setToken message token)
         builded (.build message-with-token)]
     (future (.send (FirebaseMessaging/getInstance) builded))))
 
-(defn send-multicast-notifications [{:keys [tokens title message badge custom-field custom-data type]}]
+(defn send-multicast-notifications [{:keys [tokens title message badges custom-field custom-data type]}]
   (let [custom-field (or custom-field "")
         custom-data (or custom-data "")
-        message (get-notification (MulticastMessage/builder) title message badge custom-field custom-data type)
+        message (get-notification (MulticastMessage/builder) title message badges custom-field custom-data type)
         message-with-token (.addAllTokens message tokens)
         built (.build message-with-token)]
     (future (.sendMulticast (FirebaseMessaging/getInstance) built))))
