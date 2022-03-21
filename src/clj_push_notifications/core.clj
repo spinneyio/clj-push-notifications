@@ -98,4 +98,4 @@
   (let [message (get-message (MulticastMessage/builder) data)
         message-with-tokens (.addAllTokens message tokens)
         built (.build message-with-tokens)]
-    (future (.send (FirebaseMessaging/getInstance) built))))
+    (future (.sendMulticast (FirebaseMessaging/getInstance) built))))
