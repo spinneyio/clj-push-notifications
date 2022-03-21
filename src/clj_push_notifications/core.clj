@@ -69,14 +69,16 @@
                   (.setApnsConfig apns-config))]
     message))
 
+(defn- get-message [builder data]
+  (reduce (fn [builder [k v]] (.putData builder k v)) builder data))
 
 (defn send-notification [{:keys [token title message badges custom-field custom-data type]}]
   (let [custom-field (or custom-field "")
         custom-data (or custom-data "")
         message (get-notification (Message/builder) title message badges custom-field custom-data type)
         message-with-token (.setToken message token)
-        builded (.build message-with-token)]
-    (future (.send (FirebaseMessaging/getInstance) builded))))
+        built (.build message-with-token)]
+    (future (.send (FirebaseMessaging/getInstance) built))))
 
 (defn send-multicast-notifications [{:keys [tokens title message badges custom-field custom-data type]}]
   (let [custom-field (or custom-field "")
@@ -85,3 +87,15 @@
         message-with-token (.addAllTokens message tokens)
         built (.build message-with-token)]
     (future (.sendMulticast (FirebaseMessaging/getInstance) built))))
+
+(defn send-message [{:keys [token data]}]
+  (let [message (get-message (Message/builder) data)
+        message-with-token (.setToken message token)
+        built (.build message-with-token)]
+    (future (.send (FirebaseMessaging/getInstance) built))))
+
+(defn send-multicast-messages [{:keys [tokens data]}]
+  (let [message (get-message (MulticastMessage/builder) data)
+        message-with-tokens (.addAllTokens message tokens)
+        built (.build message-with-tokens)]
+    (future (.send (FirebaseMessaging/getInstance) built))))

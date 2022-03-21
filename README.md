@@ -4,7 +4,7 @@ Clojure wrap for Firebase Cloud Messaging that allows You to send push notificat
 ### Installation
 Leiningen coordinates:
 ```clj
-[clj-push-notifications "1.0.4"]
+[clj-push-notifications "1.0.5"]
 ```
 ### Example of usage:
 First get Your credentials (google-services.json file) from Firebase console, and add them to Your project path (or some config file):
