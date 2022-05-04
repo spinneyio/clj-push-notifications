@@ -1,12 +1,11 @@
 (ns clj-push-notifications.core
   (:import
-   java.io.FileInputStream
    java.io.ByteArrayInputStream
    (com.google.firebase FirebaseOptions FirebaseOptions$Builder FirebaseApp)
    com.google.auth.oauth2.GoogleCredentials
    (com.google.firebase.messaging FirebaseMessaging Message MulticastMessage
                                   Notification AndroidConfig AndroidNotification
-                                  ApnsConfig Aps)))
+                                  AndroidConfig$Priority ApnsConfig Aps)))
 
 (defn- string-to-stream [string]
   (-> string
@@ -70,7 +69,12 @@
     message))
 
 (defn- get-message [builder data]
-  (reduce (fn [builder [k v]] (.putData builder k v)) builder data))
+  (let [android-config (doto (AndroidConfig/builder)
+                         (.setTtl 0)
+                         (.setPriority AndroidConfig$Priority/HIGH))
+        builded-android-config (.build android-config)
+        builder-with-android-config (.setAndroidConfig builder builded-android-config)]
+    (.putAllData builder-with-android-config data)))
 
 (defn send-notification [{:keys [token title message badges custom-field custom-data type]}]
   (let [custom-field (or custom-field "")
