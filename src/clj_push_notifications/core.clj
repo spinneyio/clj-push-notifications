@@ -5,7 +5,7 @@
    com.google.auth.oauth2.GoogleCredentials
    (com.google.firebase.messaging FirebaseMessaging Message MulticastMessage
                                   Notification AndroidConfig AndroidNotification
-                                  AndroidConfig$Priority ApnsConfig Aps)))
+                                  AndroidConfig$Priority ApnsConfig Aps Notification$Builder)))
 
 (defn- string-to-stream [string]
   (-> string
@@ -32,7 +32,10 @@
   (assert (int? (:android badges)))
   (assert (int? (:aps badges)))
   (assert (string? type))
-  (let [notification (Notification. title message)
+  (let [builder (Notification/builder)
+        builder (.setBody builder message)
+        builder (.setTitle builder title)
+        notification (.build builder)
 
         android-notification  (doto (AndroidNotification/builder)
                                 (.setIcon "stock_ticker_update")
