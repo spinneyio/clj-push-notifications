@@ -32,10 +32,11 @@
   (assert (int? (:android badges)))
   (assert (int? (:aps badges)))
   (assert (string? type))
-  (let [builder (Notification/builder)
-        builder (.setBody builder message)
-        builder (.setTitle builder title)
-        notification (.build builder)
+  (let [notification-builder (doto (Notification/builder)
+                               (.setBody message)
+                               (.setTitle title))
+
+        notification (.build notification-builder)
 
         android-notification  (doto (AndroidNotification/builder)
                                 (.setIcon "stock_ticker_update")
